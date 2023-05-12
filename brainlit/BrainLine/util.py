@@ -8,6 +8,7 @@ from brainlit.BrainLine.parse_ara import build_tree
 from tqdm import tqdm
 from brainlit.BrainLine import data
 from brainlit.BrainLine.imports import *
+import json
 
 
 def download_subvolumes(
@@ -15,18 +16,36 @@ def download_subvolumes(
     brain_id: str,
     layer_names: list,
     dataset_to_save: str,
-    object_type: str,
+    data_file: str,
 ):
+    """Download subvolumes around a set of manually marked points for validation of machine learning model.
+
+    Args:
+        data_dir (str): Path to directory where subvolumes will be saved.
+        brain_id (str): Brain ID key in brain2paths dictionary from soma_data or axon_data/
+        layer_names (list): List of precomputed layer names associated with the brain_id, ordered by primary signal channel (e.g. antibody), background channel, and secondary signal channel (e.g. endogenous fluorescence).
+        dataset_to_save (str): val or train - specifies which set of subvolumes should be downloaded, if applicable.
+        data_file (str): path to json file with data information.
+
+    Raises:
+        ValueError: If object_type is not soma or axon
+    """
+    with open(data_file) as f:
+        data = json.load(f)
+    object_type = data["object_type"]
+    brain2paths = data["brain2paths"]
+
     if object_type == "soma":
-        brain2paths = data.soma_data.brain2paths
         radius = 25
     elif object_type == "axon":
-        brain2paths = data.axon_data.brain2paths
         radius = 50
     else:
         raise ValueError(f"object_type must be soma or axon, not {object_type}")
 
-    base_dir = data_dir + f"/brain{brain_id}/{dataset_to_save}/"
+    if isinstance(data_dir, str):
+        data_dir = Path(data_dir)
+
+    base_dir = data_dir / f"brain{brain_id}" / dataset_to_save
     antibody_layer, background_layer, endogenous_layer = layer_names
 
     if "base" in brain2paths[brain_id].keys():
@@ -90,13 +109,15 @@ def download_subvolumes(
 
             fname = (
                 base_dir
-                + f"{int(center[0])}_{int(center[1])}_{int(center[2])}{suffix}.h5"
+                / f"{int(center[0])}_{int(center[1])}_{int(center[2])}{suffix}.h5"
             )
             with h5py.File(fname, "w") as f:
                 dset = f.create_dataset("image_3channel", data=image)
 
 
-def _get_corners(shape, chunk_size, max_coords: list = [-1, -1, -1]):
+def _get_corners(
+    shape, chunk_size, max_coords: list = [-1, -1, -1], min_coords: list = [-1, -1, -1]
+):
     corners = []
     for i in tqdm(range(0, shape[0], chunk_size[0])):
         for j in tqdm(range(0, shape[1], chunk_size[1]), leave=False):
@@ -105,14 +126,20 @@ def _get_corners(shape, chunk_size, max_coords: list = [-1, -1, -1]):
                 c2 = [
                     np.amin([shape[idx], c1[idx] + chunk_size[idx]]) for idx in range(3)
                 ]
-                conditions = [(max == -1 or c < max) for c, max in zip(c1, max_coords)]
+                conditions_max = [
+                    (max == -1 or c < max) for c, max in zip(c1, max_coords)
+                ]
+                conditions_min = [
+                    (min == -1 or c > min) for c, min in zip(c2, min_coords)
+                ]
+                conditions = conditions_max + conditions_min
                 if all(conditions):
                     corners.append([c1, c2])
 
     return corners
 
 
-def json_to_points(url, round=False):
+def json_to_points(url, round=False) -> dict:
     """Extract points from a neuroglancer url.
 
     Args:
@@ -147,7 +174,7 @@ def json_to_points(url, round=False):
     return point_layers
 
 
-def find_sample_names(dir, dset="", add_dir=False):
+def _find_sample_names(dir, dset="", add_dir=False):
     """Find file paths of samples in a given directory according to filters used in the workflow.
 
 
@@ -173,7 +200,7 @@ def find_sample_names(dir, dset="", add_dir=False):
     return items
 
 
-def setup_atlas_graph():
+def _setup_atlas_graph():
     """Create networkx graph of regions in allen atlas (from ara_structure_ontology.json). Initially uses vikram's code in build_tree, then converts to networkx.
 
     Returns:
@@ -219,7 +246,7 @@ def setup_atlas_graph():
     return G
 
 
-def get_atlas_level_nodes(atlas_level, atlas_graph):
+def _get_atlas_level_nodes(atlas_level, atlas_graph):
     """Find regions in atlas that are at a specified level in the hierarchy
 
     Args:
@@ -237,7 +264,7 @@ def get_atlas_level_nodes(atlas_level, atlas_graph):
     return atlas_level_nodes
 
 
-def find_atlas_level_label(label, atlas_level_nodes, atlas_level, G):
+def _find_atlas_level_label(label, atlas_level_nodes, atlas_level, G):
     """Map a given region label to a label at a specified level in the hierarchy.
 
     Args:
@@ -266,7 +293,7 @@ def find_atlas_level_label(label, atlas_level_nodes, atlas_level, G):
             preds = list(G.predecessors(label))
             if len(preds) != 1:
                 raise ValueError(f"{len(preds)} predecessors of node {label}")
-            atlas_level_label = find_atlas_level_label(
+            atlas_level_label = _find_atlas_level_label(
                 preds[0], atlas_level_nodes, atlas_level, G
             )
             counter += 1
@@ -275,7 +302,7 @@ def find_atlas_level_label(label, atlas_level_nodes, atlas_level, G):
         return atlas_level_label
 
 
-def fold(image):
+def _fold(image):
     """Take a 2D image and add the left half to a reflected version of the right half.
 
     Args:
