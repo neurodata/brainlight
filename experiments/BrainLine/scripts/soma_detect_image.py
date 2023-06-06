@@ -9,7 +9,6 @@ Inputs
 # -dir_base
 # data_dir and results_dir ARE CLEAR
 # threshold IS CORRECT
-
 brain = "MS22"
 antibody_layer = "Ch_647"
 background_layer = "Ch_561"
@@ -44,7 +43,6 @@ max_coords = [
     -1,
 ]  # max coords or -1 if you want to process everything along that dimension
 ncpu = 2  # 16  # number of cores to use for detection
-
 chunk_size = [512, 1024, 2048]  # [256, 256, 300]
 
 """ 

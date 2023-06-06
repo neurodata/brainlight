@@ -404,15 +404,17 @@ class SomaDistribution(BrainDistribution):
             "y": "Region",
             "hue": "Subtype",
             "data": df,
+            "jitter": False,
+            "dodge": True
         }
 
         sns.set(font_scale=2)
-        bplot = sns.barplot(ax=axes[0], orient="h", **fig_args)
+        bplot = sns.stripplot(ax=axes[0], orient="h", **fig_args)
         bplot.set_xscale("log")
 
         if len(subtypes) > 1:
             annotator = self._configure_annotator(df, axes[0], "Somas (#)")
-            annotator.new_plot(bplot, orient="h", plot="barplot", **fig_args)
+            annotator.new_plot(bplot, orient="h", plot="stripplot", **fig_args)
             annotator.apply_and_annotate()
 
         # second panel
@@ -421,16 +423,18 @@ class SomaDistribution(BrainDistribution):
             "y": "Region",
             "hue": "Subtype",
             "data": df,
+            "jitter": False,
+            "dodge": True
         }
 
-        bplot = sns.barplot(ax=axes[1], orient="h", **fig_args)
+        bplot = sns.stripplot(ax=axes[1], orient="h", **fig_args)
         bplot.set_xscale("log")
 
         if len(subtypes) > 1:
             annotator = self._configure_annotator(
                 df, axes[1], "Percent of Total Somas (%)"
             )
-            annotator.new_plot(bplot, orient="h", plot="barplot", **fig_args)
+            annotator.new_plot(bplot, orient="h", plot="stripplot", **fig_args)
             annotator.apply_and_annotate()
 
         # third panel
@@ -440,15 +444,17 @@ class SomaDistribution(BrainDistribution):
                 "y": "Region",
                 "hue": "Subtype",
                 "data": df,
+                "jitter": False,
+                "dodge": True
             }
 
             sns.set(font_scale=2)
-            bplot = sns.barplot(ax=axes[2], orient="h", **fig_args)
+            bplot = sns.stripplot(ax=axes[2], orient="h", **fig_args)
             bplot.set_xscale("log")
 
             if len(subtypes) > 1:
                 annotator = self._configure_annotator(df, axes[2], "Normalized Somas")
-                annotator.new_plot(bplot, orient="h", plot="barplot", **fig_args)
+                annotator.new_plot(bplot, orient="h", plot="stripplot", **fig_args)
                 annotator.apply_and_annotate()
 
         fig.tight_layout()
@@ -618,6 +624,8 @@ class SomaDistribution(BrainDistribution):
             "x": "Region",
             "hue": "Subtype",
             "data": df,
+            "jitter": False,
+            "dodge": True
         }
 
         annotator = Annotator(axis, pairs, **fig_args)
@@ -1021,15 +1029,17 @@ class AxonDistribution(BrainDistribution):
             "y": "Region",
             "hue": "Subtype",
             "data": df,
+            "jitter": False,
+            "dodge": True
         }
 
         sns.set(font_scale=2)
-        bplot = sns.barplot(ax=axes[0], orient="h", **fig_args)
+        bplot = sns.stripplot(ax=axes[0], orient="h", **fig_args)
         bplot.set_xscale("log")
 
         if len(subtypes) > 1:
             annotator = self._configure_annotator(df, axes[0], "Axon Density (%)")
-            annotator.new_plot(bplot, orient="h", plot="barplot", **fig_args)
+            annotator.new_plot(bplot, orient="h", plot="stripplot", **fig_args)
             annotator.apply_and_annotate()
 
         # second panel
@@ -1038,16 +1048,18 @@ class AxonDistribution(BrainDistribution):
             "y": "Region",
             "hue": "Subtype",
             "data": df,
+            "jitter": False,
+            "dodge": True
         }
 
-        bplot = sns.barplot(ax=axes[1], orient="h", **fig_args)
+        bplot = sns.stripplot(ax=axes[1], orient="h", **fig_args)
         bplot.set_xscale("log")
 
         if len(subtypes) > 1:
             annotator = self._configure_annotator(
                 df, axes[1], "Percent Total Axon Volume (%)"
             )
-            annotator.new_plot(bplot, orient="h", plot="barplot", **fig_args)
+            annotator.new_plot(bplot, orient="h", plot="stripplot", **fig_args)
             annotator.apply_and_annotate()
 
         if normalize_region >= 0:
@@ -1057,17 +1069,19 @@ class AxonDistribution(BrainDistribution):
                 "y": "Region",
                 "hue": "Subtype",
                 "data": df,
+                "jitter": False,
+                "dodge": True
             }
 
             sns.set(font_scale=2)
-            bplot = sns.barplot(ax=axes[2], orient="h", **fig_args)
+            bplot = sns.stripplot(ax=axes[2], orient="h", **fig_args)
             bplot.set_xscale("log")
 
             if len(subtypes) > 1:
                 annotator = self._configure_annotator(
                     df, axes[2], "Normalized Axon Density"
                 )
-                annotator.new_plot(bplot, orient="h", plot="barplot", **fig_args)
+                annotator.new_plot(bplot, orient="h", plot="stripplot", **fig_args)
                 annotator.apply_and_annotate()
 
         fig.tight_layout()
@@ -1191,6 +1205,7 @@ class AxonDistribution(BrainDistribution):
             _log_ttest_ind, test_long_name="Log t-test_ind", test_short_name="log-t"
         )
         # test = "t-test_ind"
+        test = "Mann-Whitney"
         correction = "fdr_by"
 
         pairs = []
