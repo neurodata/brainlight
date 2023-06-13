@@ -788,10 +788,10 @@ def collect_regional_segmentation(
         max_coords=max_coords,
         min_coords=min_coords,
     )
-    Parallel(n_jobs=ncpu)(
-        delayed(_compute_composition_corner)(corner, outdir, dir_base_mask, dir_base_s3)
-        for corner in tqdm(corners, desc="Finding labels")
-    )
+    #Parallel(n_jobs=ncpu)(
+    #    delayed(_compute_composition_corner)(corner, outdir, dir_base_mask, dir_base_s3)
+    #    for corner in tqdm(corners, desc="Finding labels")
+    #)
 
     volumes = _combine_regional_segmentations(outdir)
 
