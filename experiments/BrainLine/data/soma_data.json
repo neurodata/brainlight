@@ -25,6 +25,7 @@
         },
         "8557": {
             "base": "precomputed://s3://smartspim-precomputed-volumes/2021_10_06/8557/",
+            "base2": "precomputed://https://dlab-colm.neurodata.io/2021_10_06/8557/Ch_488",
             "val_info": {
                 "url": "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=3p4kSvgMMFl61Q",
                 "somas_layer": "<unknown>",
@@ -109,7 +110,7 @@
         "8608": {
             "base": "precomputed://s3://smartspim-precomputed-volumes/2022_04_13/8608/",
             "val_info": {
-                "url": "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=NRFI2aWmv3d0Ww",
+                "url": "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=oKEqGlEJ1ymoMw",
                 "somas_layer": "soma_val",
                 "nonsomas_layer": "nonsoma_val"
             },
@@ -243,6 +244,17 @@
                 "url": "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=4Rn1qGxuWuVl5A",
                 "somas_layer": "soma_val",
                 "nonsomas_layer": "nonsoma_val"
+            },
+            "starter_train_info": {
+                "url": "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=VtRhZ5QnhI8zwg",
+                "somas_layer": "start_train",
+                "nonsomas_layer": "nonstart_train"
+            },
+            "starter_val_info": {
+                "url": "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=gsyqncI0pPKP8g",
+                "somas_layer": "start_val",
+                "nonsomas_layer": "nonstart_val",
+                "bounds": [[2100,5500,1100], [3100, 6500, 2000]]
             },
             "subtype": "gad2 vgat",
             "somas_atlas_url": "https://ara.viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=LQlB_2tJGgxGHw"

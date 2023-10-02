@@ -29,6 +29,8 @@ from brainrender.actors import Points, Volume
 import json
 from cloudvolume.exceptions import OutOfBoundsError
 from pathlib import Path
+import dcor
+import random
 
 
 class BrainDistribution:
@@ -120,12 +122,40 @@ class SomaDistribution(BrainDistribution):
         data_file: str,
         ontology_file: str,
         show_plots: bool = True,
+        bootstrap: int = 0,
+        shuffle: bool = False
     ):
         super().__init__(brain_ids, data_file, ontology_file)
         self.show_plots = show_plots
 
         atlas_points = self._retrieve_soma_coords(brain_ids)
         self.atlas_points = atlas_points
+
+        if shuffle:
+            subtypes = []
+            for brain_id in brain_ids:
+                subtypes.append(self.brain2paths[brain_id]["subtype"])
+            random.shuffle(subtypes)
+            for subtype, brain_id in zip(subtypes,brain_ids):
+                self.brain2paths[brain_id]["subtype"] = subtype
+
+
+        if bootstrap > 0:
+            new_ids = []
+            for brain_id in tqdm(brain_ids, desc="bootstrapping..."):
+                subtype = self.brain2paths[brain_id]["subtype"]
+                for bootstrap_iter in range(bootstrap):
+                    name = f"{brain_id}-{bootstrap_iter}"
+                    n = atlas_points[brain_id].shape[0]
+                    sample = np.random.randint(0, n, size=n)
+                    pts = atlas_points[brain_id][sample,:]
+
+                    self.atlas_points[name] = pts
+                    new_ids.append(name)
+                    self.subtype_counts[subtype] += 1
+                    self.brain2paths[name] = {"subtype": subtype}
+            self.brain_ids += new_ids
+
 
         id_to_regioncounts_l = self._get_regions(atlas_points, side="l")
         self.id_to_regioncounts = id_to_regioncounts_l
@@ -234,6 +264,7 @@ class SomaDistribution(BrainDistribution):
         brain2paths = self.brain2paths
         atlas_points = self.atlas_points
         subtype_counts = self._get_subtype_counts()
+        depth_radius = 10
 
         if "filepath" in brain2paths["atlas"].keys():
             vol_atlas = io.imread(brain2paths["atlas"]["filepath"])
@@ -242,7 +273,7 @@ class SomaDistribution(BrainDistribution):
 
         slice = np.squeeze(vol_atlas[z, :, :])
         newslice, borders, half_width = self._slicetolabels(slice, fold_on=fold_on)
-        heatmap = np.zeros([borders.shape[0], borders.shape[1], 3])
+        heatmap = np.zeros([borders.shape[0], borders.shape[1], depth_radius*2+1, 3])
 
         if self.show_plots:
             if plot_type == "napari":
@@ -260,13 +291,14 @@ class SomaDistribution(BrainDistribution):
             gtype = brain2paths[key]["subtype"]
 
             ra = atlas_points[key]
-            points = ra[(ra[:, 0] < z + 10) & (ra[:, 0] > z - 10)]
+            points = ra[(ra[:, 0] <= z + depth_radius) & (ra[:, 0] >= z - depth_radius)]
 
             # only select points that fall on an ROI
             fg_points = []
             channel_map = {"red": 0, "green": 1, "blue": 2}
             channel = channel_map[subtype_colors[gtype]]
             for point in points:
+                depth = int(point[0]) - z + depth_radius
                 im_coord = [int(point[1]), int(point[2])]
 
                 if (
@@ -279,8 +311,8 @@ class SomaDistribution(BrainDistribution):
 
                     fg_points.append([im_coord[0], im_coord[1]])
                     heatmap[
-                        int(im_coord[0]), int(im_coord[1]), channel
-                    ] += 1  # /subtype_counts[gtype]
+                        int(im_coord[0]), int(im_coord[1]), depth, channel
+                    ] += 1 /subtype_counts[gtype]
             if self.show_plots:
                 if plot_type == "napari":
                     v.add_points(
@@ -306,8 +338,20 @@ class SomaDistribution(BrainDistribution):
         if self.show_plots:
             if plot_type == "napari":
                 for c in range(3):
-                    heatmap[:, :, c] = ndi.gaussian_filter(heatmap[:, :, c], sigma=3)
-                v.add_image(heatmap, scale=[10, 10], name=f"Heatmap")  # , rgb=True)
+                    heatmap[:, :, :, c] = ndi.gaussian_filter(heatmap[:, :, :, c], sigma=3)
+                v.add_image(heatmap[:,:,depth_radius,:], scale=[10, 10], name=f"Heatmap")  # , rgb=True)
+
+                
+                for subtype1, subtype2 in zip(["tph2 gad2", "tph2 gad2", "tph2 vglut3"], ["tph2 vglut3", "gad2 vgat", "gad2 vgat"]):
+                    diffpos = heatmap[:,:,depth_radius,channel_map[subtype_colors[subtype1]]] - heatmap[:,:,depth_radius,channel_map[subtype_colors[subtype2]]]
+                    diffneg = np.copy(diffpos)
+                    diffpos[diffpos<0] = 0
+                    diffneg[diffneg>0] = 0
+                    diffneg = np.abs(diffneg)
+                    heatdiff = 0*heatmap
+                    heatdiff[:,:,depth_radius, channel_map[subtype_colors[subtype1]]] = diffpos
+                    heatdiff[:,:,depth_radius, channel_map[subtype_colors[subtype2]]] = diffneg
+                    v.add_image(heatdiff[:,:,depth_radius,:], scale=[10, 10], name=f"{subtype1} - {subtype2}")  # , rgb=True)
                 v.add_labels(borders * 2, scale=[10, 10], name=f"z={z}")
 
                 v.scale_bar.unit = "um"
@@ -334,6 +378,8 @@ class SomaDistribution(BrainDistribution):
         scene.add_brain_region(brain_region, alpha=0.15)
 
         for brain_id in brain_ids:
+            if "somas_atlas_path" in brain2paths[brain_id].keys():
+                continue
             viz_link = brain2paths[brain_id]["somas_atlas_url"]
             viz_link = NGLink(viz_link.split("json_url=")[-1])
             ngl_json = viz_link._json
@@ -390,9 +436,9 @@ class SomaDistribution(BrainDistribution):
         subtypes = df["Subtype"].unique()
 
         if normalize_region >= 0:
-            fig, axes = plt.subplots(1, 3, figsize=(39, 20))
+            fig, axes = plt.subplots(2, 3, figsize=(39, 40), dpi=300)
         else:
-            fig, axes = plt.subplots(1, 2, figsize=(26, 20))
+            fig, axes = plt.subplots(2, 2, figsize=(26, 40), dpi=300)
 
         sns.set(font_scale=2)
 
@@ -403,56 +449,71 @@ class SomaDistribution(BrainDistribution):
             "hue": "Subtype",
             "data": df,
             # "jitter": False,
-            "dodge": True,
+            "dodge": True
         }
 
         sns.set(font_scale=2)
-        bplot = sns.barplot(ax=axes[0], orient="h", **fig_args)
+        bplot = sns.stripplot(ax=axes[0,0], orient="h", legend=False, **fig_args)
+        fig_args["boxprops"] = {'facecolor':'none'}
+        bplot = sns.boxplot(ax=axes[0,0], orient="h", **fig_args)
         bplot.set_xscale("log")
 
+        fig_args.pop("dodge")
+        fig_args.pop("boxprops")
+        fig_args["style"] = "Brain ID"
+        sns.scatterplot(ax=axes[1,0], **fig_args)
+        bplot.set_xscale("log")
+        fig_args.pop("style")
+
         if len(subtypes) > 1:
-            annotator = self._configure_annotator(df, axes[0], "Somas (#)")
-            annotator.new_plot(bplot, orient="h", plot="barplot", **fig_args)
+            annotator = self._configure_annotator(df, axes[0,0], "Somas (#)")
+            annotator.new_plot(bplot, orient="h", plot="boxplot", **fig_args)
             annotator.apply_and_annotate()
 
         # second panel
-        fig_args = {
-            "x": "Percent of Total Somas (%)",
-            "y": "Region",
-            "hue": "Subtype",
-            "data": df,
-            # "jitter": False,
-            "dodge": True,
-        }
+        fig_args["x"] = "Percent of Total Somas (%)"
+        fig_args["dodge"] = True
 
-        bplot = sns.barplot(ax=axes[1], orient="h", **fig_args)
+        bplot = sns.stripplot(ax=axes[0,1], orient="h", legend=False, **fig_args)
+        fig_args["boxprops"] = {'facecolor':'none'}
+        bplot = sns.boxplot(ax=axes[0,1], orient="h", **fig_args)
         bplot.set_xscale("log")
+
+        fig_args.pop("dodge")
+        fig_args.pop("boxprops")
+        fig_args["style"] = "Brain ID"
+        sns.scatterplot(ax=axes[1,1], **fig_args)
+        bplot.set_xscale("log")
+        fig_args.pop("style")
 
         if len(subtypes) > 1:
             annotator = self._configure_annotator(
-                df, axes[1], "Percent of Total Somas (%)"
+                df, axes[0,1], "Percent of Total Somas (%)"
             )
-            annotator.new_plot(bplot, orient="h", plot="barplot", **fig_args)
+            annotator.new_plot(bplot, orient="h", plot="boxplot", **fig_args)
             annotator.apply_and_annotate()
 
         # third panel
         if normalize_region >= 0:
-            fig_args = {
-                "x": "Normalized Somas",
-                "y": "Region",
-                "hue": "Subtype",
-                "data": df,
-                # "jitter": False,
-                "dodge": True,
-            }
+            fig_args["x"]= "Normalized Somas"
+            fig_args["dodge"] = True
 
             sns.set(font_scale=2)
-            bplot = sns.barplot(ax=axes[2], orient="h", **fig_args)
+            bplot = sns.stripplot(ax=axes[0,2], orient="h", legend=False, **fig_args)
+            fig_args["boxprops"] = {'facecolor':'none'}
+            bplot = sns.boxplot(ax=axes[0,2], orient="h", **fig_args)
             bplot.set_xscale("log")
 
+            fig_args.pop("dodge")
+            fig_args.pop("boxprops")
+            fig_args["style"] = "Brain ID"
+            sns.scatterplot(ax=axes[1,2], **fig_args)
+            bplot.set_xscale("log")
+            fig_args.pop("style")
+
             if len(subtypes) > 1:
-                annotator = self._configure_annotator(df, axes[2], "Normalized Somas")
-                annotator.new_plot(bplot, orient="h", plot="barplot", **fig_args)
+                annotator = self._configure_annotator(df, axes[0,2], "Normalized Somas")
+                annotator.new_plot(bplot, orient="h", plot="boxplot", **fig_args)
                 annotator.apply_and_annotate()
 
         fig.tight_layout()
@@ -577,24 +638,24 @@ class SomaDistribution(BrainDistribution):
                 region_name.append(region_component_name)
                 brain_ids_data.append(brain_id)
 
-            d = {
-                "Somas (#)": somas,
-                "Percent of Total Somas (%)": somas_pct,
-                "Subtype": subtypes,
-                "Region": region_name,
-                "Brain ID": brain_ids_data,
-            }
-            if normalize_region >= 0:
-                d["Normalized Somas"] = somas_norm
+        d = {
+            "Somas (#)": somas,
+            "Percent of Total Somas (%)": somas_pct,
+            "Subtype": subtypes,
+            "Region": region_name,
+            "Brain ID": brain_ids_data,
+        }
+        if normalize_region >= 0:
+            d["Normalized Somas"] = somas_norm
 
-            df = pd.DataFrame(data=d)
-            return df
+        df = pd.DataFrame(data=d)
+        return df
 
     def _configure_annotator(self, df, axis, ind_variable: str):
         subtype_counts = self._get_subtype_counts()
         test = "Mann-Whitney"
-        # my_logttest = StatTest(self._log_ttest_ind, test_long_name='Log t-test_ind', test_short_name='log-t')
-        # test = "t-test_ind"
+        test = StatTest(_log_ttest_ind, test_long_name='Log t-test_ind', test_short_name='log-t')
+        #test = "t-test_ind"
         correction = "fdr_by"
 
         pairs = []
@@ -635,6 +696,62 @@ class SomaDistribution(BrainDistribution):
         )
 
         return annotator
+
+    def dcorr_test(self, subtype1, subtype2, bin_size = [2000,2000,2000]):
+        brain2paths = self.brain2paths
+        brain_ids = self.brain_ids
+        atlas_points = self.atlas_points
+
+        bin_size = np.array(bin_size)
+        atlas_vol = CloudVolume(brain2paths["atlas"]["url"])
+        shp = np.array(atlas_vol.shape[:3])
+        res = np.array(atlas_vol.resolution) / 1000
+        bin_size_vox = np.divide(bin_size, res)
+
+        subtypes = []
+        vectors = []
+        for brain_id in tqdm(brain_ids, desc="Building feature vectors..."):
+            if brain2paths[brain_id]["subtype"] == subtype1:
+                subtypes.append(0)
+            elif brain2paths[brain_id]["subtype"] == subtype2:
+                subtypes.append(1)
+            else:
+                continue
+
+            blocks = np.zeros([int(s / b) + 1 for s,b in zip(shp, bin_size_vox)])
+            points = atlas_points[brain_id]
+            for xi, x in enumerate(np.arange(0, shp[0], bin_size_vox[0])):
+                for yi, y in enumerate(np.arange(0, shp[1], bin_size_vox[1])):
+                    for zi, z in enumerate(np.arange(0, shp[2], bin_size_vox[2])):
+                        bin_points = points[(points[:,0] >= x) & (points[:,0] < x+bin_size_vox[0]) & (points[:,1] >= y) & (points[:,1] < y+bin_size_vox[1]) & (points[:,2] >= z) & (points[:,2] < z+bin_size_vox[2]),:]
+                        blocks[xi, yi, zi] = bin_points.shape[0]
+                        # raise ValueError()
+            vector = np.array(blocks.flatten(), dtype='float')
+            vector /= np.sum(vector)
+
+            vectors.append(vector)
+        subtypes = np.array(subtypes)
+        vectors = np.array(vectors)
+
+
+        print(dcor.independence.distance_covariance_test(subtypes, vectors))
+
+
+        z = 800
+        if "filepath" in brain2paths["atlas"].keys():
+            vol_atlas = io.imread(brain2paths["atlas"]["filepath"])
+        else:
+            vol_atlas = CloudVolume(brain2paths["atlas"]["url"])
+
+        slice = np.squeeze(vol_atlas[z, :, :])
+        newslice, borders, half_width = self._slicetolabels(slice, fold_on=False)
+        v = napari.Viewer()
+        v.add_image(np.squeeze(blocks[int(10*z / bin_size[0]),:,:]), scale=[bin_size[1], bin_size[2]], name="block")
+        v.add_labels(borders * 2, scale=[10, 10], name=f"{subtype1} vs {subtype2} z={z}")
+
+        v.scale_bar.unit = "um"
+        v.scale_bar.visible = True
+        napari.run()
 
 
 def _log_ttest_ind(group_data1, group_data2, verbose=1, **stats_params):
@@ -1041,12 +1158,14 @@ class AxonDistribution(BrainDistribution):
         }
 
         sns.set(font_scale=2)
-        bplot = sns.barplot(ax=axes[0], orient="h", **fig_args)
+        bplot = sns.stripplot(ax=axes[0], orient="h", legend=False, **fig_args)
+        fig_args["boxprops"] = {'facecolor':'none'}
+        bplot = sns.boxplot(ax=axes[0], orient="h", **fig_args)
         bplot.set_xscale("log")
 
         if len(subtypes) > 1:
             annotator = self._configure_annotator(df, axes[0], "Axon Density (%)")
-            annotator.new_plot(bplot, orient="h", plot="barplot", **fig_args)
+            annotator.new_plot(bplot, orient="h", plot="boxplot", **fig_args)
             annotator.apply_and_annotate()
 
         # second panel
@@ -1059,14 +1178,16 @@ class AxonDistribution(BrainDistribution):
             "dodge": True,
         }
 
-        bplot = sns.barplot(ax=axes[1], orient="h", **fig_args)
+        bplot = sns.stripplot(ax=axes[1], orient="h", legend=False, **fig_args)
+        fig_args["boxprops"] = {'facecolor':'none'}
+        bplot = sns.boxplot(ax=axes[1], orient="h", **fig_args)
         bplot.set_xscale("log")
 
         if len(subtypes) > 1:
             annotator = self._configure_annotator(
                 df, axes[1], "Percent Total Axon Volume (%)"
             )
-            annotator.new_plot(bplot, orient="h", plot="barplot", **fig_args)
+            annotator.new_plot(bplot, orient="h", plot="boxplot", **fig_args)
             annotator.apply_and_annotate()
 
         if normalize_region >= 0:
@@ -1081,14 +1202,16 @@ class AxonDistribution(BrainDistribution):
             }
 
             sns.set(font_scale=2)
-            bplot = sns.barplot(ax=axes[2], orient="h", **fig_args)
+            bplot = sns.stripplot(ax=axes[2], orient="h", legend=False, **fig_args)
+            fig_args["boxprops"] = {'facecolor':'none'}
+            bplot = sns.boxplot(ax=axes[2], orient="h", **fig_args)
             bplot.set_xscale("log")
 
             if len(subtypes) > 1:
                 annotator = self._configure_annotator(
                     df, axes[2], "Normalized Axon Density"
                 )
-                annotator.new_plot(bplot, orient="h", plot="barplot", **fig_args)
+                annotator.new_plot(bplot, orient="h", plot="boxplot", **fig_args)
                 annotator.apply_and_annotate()
 
         fig.tight_layout()
@@ -1212,7 +1335,7 @@ class AxonDistribution(BrainDistribution):
             _log_ttest_ind, test_long_name="Log t-test_ind", test_short_name="log-t"
         )
         # test = "t-test_ind"
-        test = "Mann-Whitney"
+        # test = "Mann-Whitney"
         correction = "fdr_by"
 
         pairs = []
