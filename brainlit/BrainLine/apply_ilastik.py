@@ -165,7 +165,14 @@ def plot_results(
             for filename in tqdm(test_files, disable=True):
                 f = h5py.File(filename, "r")
                 pred = f.get("exported_data")
-                pred = pred[positive_channel, :, :, :]
+                channel_dim = np.argmin(pred.shape)
+                if channel_dim == 0:
+                    pred = pred[positive_channel, :, :, :]
+                elif channel_dim == 3:
+                    pred = pred[:, :, :, positive_channel]
+                else:
+                    raise ValueError(f"Channel dimension should be first or last, not {channel_dim}")
+                
                 mask = pred > threshold
                 cntr = [s // 2 for s in mask.shape]
 
@@ -201,7 +208,10 @@ def plot_results(
                     filename_lab = filename[:-17] + "-image_3channel_Labels.h5"
                     f = h5py.File(filename_lab, "r")
                     gt = f.get("exported_data")
-                    gt = gt[0, :, :, :]
+                    if channel_dim == 0:
+                        gt = gt[0, :, :, :]
+                    elif channel_dim == 3:
+                        gt = gt[:, :, :, 0]
                     pos_labels = gt == 2
                     neg_labels = gt == 1
 
@@ -309,7 +319,14 @@ def examine_threshold(
         print(f"*************File: {im_fname}*********")
         f = h5py.File(filename, "r")
         pred = f.get("exported_data")
-        pred = pred[positive_channel, :, :, :]
+        channel_dim = np.argmin(pred.shape)
+        if channel_dim == 0:
+            pred = pred[positive_channel, :, :, :]
+        elif channel_dim == 3:
+            pred = pred[:, :, :, positive_channel]
+        else:
+            raise ValueError(f"Channel dimension should be first or last, not {channel_dim}")
+        
         mask = pred > threshold
         cntr = [s // 2 for s in mask.shape]
 
@@ -376,7 +393,11 @@ def examine_threshold(
             fname_lab = im_fname.split(".")[0] + "-image_3channel_Labels.h5"
             f = h5py.File(fname_lab, "r")
             gt = f.get("exported_data")
-            gt = gt[0, :, :, :]
+            if channel_dim == 0:
+                gt = gt[0, :, :, :]
+            elif channel_dim == 3:
+                gt = gt[:, :, :, 0]
+            
             if positive_channel == 1:
                 pos_labels = gt == 2
                 neg_labels = gt == 1
@@ -402,16 +423,20 @@ def examine_threshold(
             else:
                 precision = true_pos / (true_pos + false_pos)
 
-            if (precision < 0.8 or recall) < 0.8 and show_plot:
+            if (precision < 0.8 or recall < 0.8) and show_plot:
                 f = h5py.File(im_fname, "r")
                 im = f.get("image_3channel")
                 print(f"prec{precision} recall: {recall}")
                 viewer = napari.Viewer(ndisplay=3)
-                viewer.add_image(im[0, :, :, :], name=f"{im_fname}")
-                viewer.add_image(im[1, :, :, :], name="bg")
-                viewer.add_image(im[2, :, :, :], name="endo")
+                if len(im.shape) == 3:
+                    viewer.add_image(im, name=f"{im_fname}")
+                else:
+                    for layer in range(im.shape[0]):
+                        viewer.add_image(im[layer, :, :, :], name=f"{layer}-{im_fname}")
                 viewer.add_labels(mask, name="mask")
                 viewer.add_labels(pos_labels + 2 * neg_labels, name="pos labels")
+            else:
+                print(f"Precision: {precision}, recall: {recall}")
 
         else:
             raise ValueError(f"object_type must be axon or soma, not {object_type}")
@@ -523,41 +548,56 @@ class ApplyIlastik_LargeImage:
         corners = _get_corners(
             shape, chunk_size, max_coords=max_coords, min_coords=min_coords
         )
-        chunk_interval = 6
-        corners_chunks = [
-            corners[i : i + chunk_interval]
-            for i in range(0, len(corners), chunk_interval)
-        ]
 
-        for corners_chunk in tqdm(corners_chunks, desc="corner chunks"):
-            if self.ncpu == 1:
-                for corner in tqdm(corners_chunk, leave=False):
-                    self._process_chunk(
-                        corner[0],
-                        corner[1],
-                        volume_base_dir,
-                        layer_names,
-                        threshold,
-                        data_dir,
-                        self.object_type,
-                        results_dir,
-                    )
-            else:
-                Parallel(n_jobs=self.ncpu)(
-                    delayed(self._process_chunk)(
-                        corner[0],
-                        corner[1],
-                        volume_base_dir,
-                        layer_names,
-                        threshold,
-                        data_dir,
-                        self.object_type,
-                        results_dir,
-                    )
-                    for corner in tqdm(corners_chunk, leave=False)
-                )
-            for f in os.listdir(data_dir):
-                os.remove(os.path.join(data_dir, f))
+        Parallel(n_jobs=self.ncpu)(
+            delayed(self._process_chunk)(
+                corner[0],
+                corner[1],
+                volume_base_dir,
+                layer_names,
+                threshold,
+                data_dir,
+                self.object_type,
+                results_dir,
+            )
+            for corner in tqdm(corners, leave=False)
+        )
+
+        # chunk_interval = 6
+        # corners_chunks = [
+        #     corners[i : i + chunk_interval]
+        #     for i in range(0, len(corners), chunk_interval)
+        # ]
+
+        # for corners_chunk in tqdm(corners_chunks, desc="corner chunks"):
+        #     if self.ncpu == 1:
+        #         for corner in tqdm(corners_chunk, leave=False):
+        #             self._process_chunk(
+        #                 corner[0],
+        #                 corner[1],
+        #                 volume_base_dir,
+        #                 layer_names,
+        #                 threshold,
+        #                 data_dir,
+        #                 self.object_type,
+        #                 results_dir,
+        #             )
+        #     else:
+        #         Parallel(n_jobs=self.ncpu)(
+        #             delayed(self._process_chunk)(
+        #                 corner[0],
+        #                 corner[1],
+        #                 volume_base_dir,
+        #                 layer_names,
+        #                 threshold,
+        #                 data_dir,
+        #                 self.object_type,
+        #                 results_dir,
+        #             )
+        #             for corner in tqdm(corners_chunk, leave=False)
+        #         )
+        #     for f in os.listdir(data_dir):
+        #         os.remove(os.path.join(data_dir, f))
 
     def _make_mask_info(self, mask_dir: str, vol: CloudVolume, chunk_size: list):
         info = CloudVolume.create_new_info(
@@ -575,6 +615,7 @@ class ApplyIlastik_LargeImage:
         )
         vol_mask = CloudVolume(mask_dir, info=info, compress=False)
         vol_mask.commit_info()
+
 
     def _process_chunk(
         self,
@@ -668,6 +709,9 @@ class ApplyIlastik_LargeImage:
                 dir_mask, parallel=1, mip=mip, fill_missing=True, compress=False
             )
             vol_mask[c1[0] : c2[0], c1[1] : c2[1], c1[2] : c2[2]] = mask
+        
+        os.remove(fname)
+        os.remove(fname[-3:]+"_Probabilities.h5")
 
     def collect_soma_results(self, brain_id: str):
         """Combine all soma detections and post to neuroglancer. Intended for use after apply_ilastik_parallel.
