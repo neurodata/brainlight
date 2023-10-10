@@ -13,6 +13,7 @@ import igneous.task_creation as tc
 from taskqueue import LocalTaskQueue
 from pathlib import Path
 from brainlit.BrainLine.apply_ilastik import ApplyIlastik_LargeImage
+import json
 
 """
 Inputs
@@ -63,6 +64,7 @@ alli = ApplyIlastik_LargeImage(
     ncpu=ncpu,
     data_file=data_file,
 )
+'''
 alli.apply_ilastik_parallel(
     brain_id=brain,
     layer_names=layer_names,
@@ -72,7 +74,9 @@ alli.apply_ilastik_parallel(
     min_coords=min_coords,
     max_coords=max_coords,
 )
-alli.collect_axon_results(brain_id=brain, ng_layer_name="Ch_647")
+'''
+# alli.collect_axon_results(brain_id=brain, ng_layer_name="Ch_647")
+print("Axon mask written")
 
 
 """
@@ -84,7 +88,10 @@ downsample_ask = input(
 )
 if downsample_ask == "y":
     print("Downsampling...")
-    dir_base = brain2paths[brain]["base"]
+    with open(data_file) as f:
+        js = json.load(f)
+
+    dir_base = js["brain2paths"][brain]["base"]
     layer_path = dir_base + "axon_mask"
 
     tq = LocalTaskQueue(parallel=16)
