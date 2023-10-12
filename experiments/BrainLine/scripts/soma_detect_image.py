@@ -32,7 +32,7 @@ ilastik_project = brainline_exp_dir / "data" / "models" / "soma" / "matt_soma_ra
 
 
 min_coords = [
-    910,
+    6144,
     -1,
     -1,
 ]  # max coords or -1 if you want to process everything along that dimension
