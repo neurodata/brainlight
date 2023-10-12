@@ -126,3 +126,4 @@ for file in tqdm(files, desc="Assembling results"):
 outpath = outdir + "wholebrain_" + brain_id + ".pkl"
 with open(outpath, "wb") as f:
     pickle.dump(volumes, f)
+
