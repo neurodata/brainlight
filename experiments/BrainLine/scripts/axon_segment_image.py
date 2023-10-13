@@ -19,12 +19,12 @@ import json
 Inputs
 """
 
-brain = "MS33"
+brain = "MS9"
 antibody_layer = "Ch_647"
 background_layer = "Ch_561"
 endogenous_layer = "Ch_488"
 
-threshold = 0.18  # threshold to use for ilastik
+threshold = 0.22  # threshold to use for ilastik
 brainline_exp_dir = Path(os.getcwd()) / Path(__file__).parents[1]
 data_dir = (
     brainline_exp_dir / "data" / "brain_temp"
@@ -39,15 +39,20 @@ ilastik_path = "/home/user/Documents/ilastik-1.4.0-Linux/run_ilastik.sh"
 
 
 min_coords = [
-    697,
-    877,
+    836,
+    -1,
     -1,
 ]  # max coords or -1 if you want to process everything along that dimension
 max_coords = [
-    6654,
+    6635,
     -1,
     -1,
 ]  # max coords or -1 if you want to process everything along that dimension
+<<<<<<< HEAD
+=======
+ncpu = 2  # number of cores to use for detection
+chunk_size = [512, 1024, 2048]  # [256, 256, 300]
+>>>>>>> aa5784330b18e2d551db1ec6ad3d6ed3b0c63831
 
 ncpu = 2  # number of cores to use for detection
 chunk_size = [512, 1024, 2048]  # [256, 256, 300]
@@ -88,10 +93,10 @@ downsample_ask = input(
 )
 if downsample_ask == "y":
     print("Downsampling...")
-    with open(data_file) as f:
-        js = json.load(f)
+    with open(data_file) as f:=
+        js = json.open(f)
+        dir_base = js["brain2paths"][brain]["base"]
 
-    dir_base = js["brain2paths"][brain]["base"]
     layer_path = dir_base + "axon_mask"
 
     tq = LocalTaskQueue(parallel=16)
