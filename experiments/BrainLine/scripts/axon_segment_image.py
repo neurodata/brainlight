@@ -48,11 +48,6 @@ max_coords = [
     -1,
     -1,
 ]  # max coords or -1 if you want to process everything along that dimension
-<<<<<<< HEAD
-=======
-ncpu = 2  # number of cores to use for detection
-chunk_size = [512, 1024, 2048]  # [256, 256, 300]
->>>>>>> aa5784330b18e2d551db1ec6ad3d6ed3b0c63831
 
 ncpu = 2  # number of cores to use for detection
 chunk_size = [512, 1024, 2048]  # [256, 256, 300]
@@ -69,7 +64,7 @@ alli = ApplyIlastik_LargeImage(
     ncpu=ncpu,
     data_file=data_file,
 )
-'''
+
 alli.apply_ilastik_parallel(
     brain_id=brain,
     layer_names=layer_names,
@@ -79,8 +74,8 @@ alli.apply_ilastik_parallel(
     min_coords=min_coords,
     max_coords=max_coords,
 )
-'''
-# alli.collect_axon_results(brain_id=brain, ng_layer_name="Ch_647")
+
+#alli.collect_axon_results(brain_id=brain, ng_layer_name="Ch_647")
 print("Axon mask written")
 
 
