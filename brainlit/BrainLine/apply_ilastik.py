@@ -633,6 +633,7 @@ class ApplyIlastik_LargeImage:
                 )
             )
         except exceptions.EmptyVolumeException:
+            print(f"Empty vol at: {c1}")
             return
 
         fname = f"image_{c1[0]}_{c1[1]}_{c1[2]}.h5"

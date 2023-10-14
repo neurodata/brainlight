@@ -88,7 +88,7 @@ downsample_ask = input(
 )
 if downsample_ask == "y":
     print("Downsampling...")
-    with open(data_file) as f:=
+    with open(data_file) as f:
         js = json.open(f)
         dir_base = js["brain2paths"][brain]["base"]
 
