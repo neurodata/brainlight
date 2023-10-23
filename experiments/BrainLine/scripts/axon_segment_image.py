@@ -64,19 +64,17 @@ alli = ApplyIlastik_LargeImage(
     ncpu=ncpu,
     data_file=data_file,
 )
+# alli.apply_ilastik_parallel(
+#     brain_id=brain,
+#     layer_names=layer_names,
+#     threshold=threshold,
+#     data_dir=data_dir,
+#     chunk_size=chunk_size,
+#     min_coords=min_coords,
+#     max_coords=max_coords,
+# )
+# alli.collect_axon_results(brain_id=brain, ng_layer_name="Ch_647")
 
-alli.apply_ilastik_parallel(
-    brain_id=brain,
-    layer_names=layer_names,
-    threshold=threshold,
-    data_dir=data_dir,
-    chunk_size=chunk_size,
-    min_coords=min_coords,
-    max_coords=max_coords,
-)
-
-#alli.collect_axon_results(brain_id=brain, ng_layer_name="Ch_647")
-print("Axon mask written")
 
 
 """
