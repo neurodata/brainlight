@@ -46,7 +46,7 @@ min_coords = [
 max_coords = [
     6620,
     -1,
-    -1, # abbreviated
+    -1,
 ]  # max coords or -1 if you want to process everything along that dimension
 
 ncpu = 2  # number of cores to use for detection

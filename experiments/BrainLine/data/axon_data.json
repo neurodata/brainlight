@@ -227,6 +227,7 @@
             "subtype": "gad2 vgat"
         },
         "MS9": {
+	    "base_s3_2": "precomputed://s3://smartspim-precomputed-volumes/2023_05_24/MS9/",
             "base": "precomputed://file:///mnt/data/Neuroglancer_Data/2023_05_24/MS9/",
             "base_s3": "precomputed://s3://smartspim-precomputed-volumes/2023_05_24/MS9/",
             "val_info": {
