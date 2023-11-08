@@ -24,7 +24,7 @@ max_coords = [
     -1,
     -1,
 ]  # max coords or -1 if you want to process everything along that dimension
-ncpu = 7  # number of cores to use for collection
+ncpu = 6  # number of cores to use for collection
 s3_reg = True
 
 for brain in brain_ids:
