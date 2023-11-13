@@ -206,7 +206,13 @@ def plot_results(
                             if prop["area"] > size_thresh:
                                 false_pos += 1
                 elif object_type == "axon":
-                    filename_lab = filename[:-17] + "-image_3channel_Labels.h5"
+                    filename_lab_3 = filename[:-17] + "-image_3channel_Labels.h5"
+                    filename_lab_2 = filename[:-17] + "-image_2channel_Labels.h5" #backward compatibility
+                    if os.path.isfile(filename_lab_3):
+                        filename_lab = filename_lab_3
+                    elif os.path.isfile(filename_lab_2):
+                        filename_lab = filename_lab_2
+
                     f = h5py.File(filename_lab, "r")
                     gt = f.get("exported_data")
                     if channel_dim == 0:
@@ -392,7 +398,12 @@ def examine_threshold(
                             name=f"nonsoma false positive area: {area}",
                         )
         elif object_type == "axon":
-            fname_lab = im_fname.split(".")[0] + "-image_3channel_Labels.h5"
+            filename_lab_3 = filename[:-17] + "-image_3channel_Labels.h5"
+            filename_lab_2 = filename[:-17] + "-image_2channel_Labels.h5" #backward compatibility
+            if os.path.isfile(filename_lab_3):
+                fname_lab = filename_lab_3
+            elif os.path.isfile(filename_lab_2):
+                fname_lab = filename_lab_2
             f = h5py.File(fname_lab, "r")
             gt = f.get("exported_data")
             if channel_dim == 0:
@@ -427,7 +438,12 @@ def examine_threshold(
 
             if (precision < 0.8 or recall < 0.8) and show_plot:
                 f = h5py.File(im_fname, "r")
-                im = f.get("image_3channel")
+                keys = list(f.keys())
+                if len(keys) > 1:
+                    raise ValueError(f"Multiple keys in image file: {keys}")
+                else:
+                    key = keys[0]
+                im = f.get(key)
                 print(f"prec{precision} recall: {recall}")
                 viewer = napari.Viewer(ndisplay=3)
                 if len(im.shape) == 3:
@@ -515,7 +531,7 @@ class ApplyIlastik_LargeImage:
             max_coords (list, optional): Upper bound of bounding box on which to apply ilastk (i.e. does not apply ilastik beyond these bounds). Defaults to [-1, -1, -1].
         """
         results_dir = self.results_dir
-        volume_base_dir_read = self.brain2paths[brain_id]["base_local"]
+        volume_base_dir_read = self.brain2paths[brain_id]["base_s3"]
         volume_base_dir_write = self.brain2paths[brain_id]["base_s3"]
         sample_path = volume_base_dir_read + layer_names[1]
         vol = CloudVolume(sample_path, parallel=True, mip=0, fill_missing=True)
