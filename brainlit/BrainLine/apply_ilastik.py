@@ -49,18 +49,13 @@ class ApplyIlastik:
         self.brains_path = brains_path
         self.brains = brains
 
-    def _apply_ilastik(self, fname):
-        if os.path.isfile(fname) and ".h5" in fname:
-            subprocess.run(
-                [
-                    self.ilastik_path,
-                    "--headless",
-                    f"--project={self.project_path}",
-                    fname,
-                ],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            )
+    def _apply_ilastik(self, fnames):
+        command = [self.ilastik_path, "--headless", f"--project={self.project_path}"] + fnames
+
+        subprocess.run(command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
 
     def process_subvols(self, dset: str = 'val', ncpu: int = 6):
         """Apply ilastik to all validation subvolumes of the specified brain ids in the specified directory
@@ -81,10 +76,13 @@ class ApplyIlastik:
             items_total += _find_sample_names(path, dset="", add_dir=True)
             print(f"Applying ilastik to {items_total}")
 
-        Parallel(n_jobs=ncpu)(
-            delayed(self._apply_ilastik)(item)
-            for item in tqdm(items_total, desc="running ilastik...")
-        )
+            n_images = len(items_total)//ncpu
+            items_chunks = [items_total[i: i+n_images] for i in range(0, len(items_total), n_images)]
+
+            Parallel(n_jobs=ncpu)(
+                delayed(self._apply_ilastik)(items_chunk)
+                for items_chunk in tqdm(items_chunks, desc="running ilastik...")
+            )
 
     def move_results(self):
         """Move results from process_subvols to a new subfolder."""
@@ -154,7 +152,9 @@ def plot_results(
             brain_name = brain_id
         base_dir = data_dir + f"/brain{brain_name}/{dset}/"
         data_files = _find_sample_names(base_dir, dset="", add_dir=True)
-        test_files = [file.split(".")[0] + "_Probabilities.h5" for file in data_files]
+        test_files = [
+            file[: file.rfind(".")] + "_Probabilities.h5" for file in data_files
+        ]
 
         best_fscore = 0
         best_thresh = -1
@@ -316,7 +316,7 @@ def examine_threshold(
     base_dir = data_dir + f"/brain{brain_id}/{dset}/"
 
     data_files = _find_sample_names(base_dir, dset="", add_dir=True)
-    test_files = [file.split(".")[0] + "_Probabilities.h5" for file in data_files]
+    test_files = [file[: file.rfind(".")] + "_Probabilities.h5" for file in data_files]
 
     size_thresh = 500
 

@@ -8,6 +8,7 @@ from brainlit.BrainLine.parse_ara import build_tree
 from tqdm import tqdm
 from brainlit.BrainLine.imports import *
 import json
+import zarr
 
 
 def download_subvolumes(
