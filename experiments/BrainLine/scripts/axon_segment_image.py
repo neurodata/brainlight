@@ -20,7 +20,7 @@ import json
 Inputs
 """
 
-brain = "11537"
+brain = "MS12"
 antibody_layer = "Ch_647"
 background_layer = "Ch_561"
 endogenous_layer = "Ch_488"
