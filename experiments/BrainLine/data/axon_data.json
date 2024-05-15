@@ -3,7 +3,7 @@
     "brain2paths": {
         "atlas": {
             "url": "precomputed://https://open-neurodata.s3.amazonaws.com/ara_2016/sagittal_10um/annotation_10um_2017",
-            "filepath": "/Users/thomasathey/Documents/mimlab/mouselight/ailey/ara/ara_10um.tif"
+            "filepath": "/home/user/brainlit/experiments/BrainLine/data/ara_10um.tif"
         },
         "test": {
             "base_s3": "precomputed://file:///Users/thomasathey/Documents/mimlab/mouselight/brainlit_parent/brainlit/brainlit/BrainLine/data/example/",
@@ -242,6 +242,14 @@
             },
             "subtype": "tph2 gad2",
             "transformed_mask": "precomputed://s3://smartspim-precomputed-volumes/2023_09_18/MS33/axon_mask_transformed"
+        },
+        "MS14": {
+            "base_s3": "precomputed://s3://smartspim-precomputed-volumes/2023_04_11/MS14/",
+            "val_info": {
+                "url": "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=Nlv--2uxdrewZw",
+                "layer": "val"
+            },
+            "subtype": "gad2 vgat"
         },
         "pytest": {
             "subtype": "test_type"
