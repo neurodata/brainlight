@@ -3,7 +3,7 @@
     "brain2paths": {
         "atlas": {
             "url": "precomputed://https://open-neurodata.s3.amazonaws.com/ara_2016/sagittal_10um/annotation_10um_2017",
-            "filepath": "/Users/thomasathey/Documents/mimlab/mouselight/ailey/ara/ara_10um.tif"
+            "filepath": "/home/user/brainlit/experiments/BrainLine/data/ara_10um.tif"
         },
         "test": {
             "base_local": "precomputed://file:///Users/thomasathey/Documents/mimlab/mouselight/brainlit_parent/brainlit/brainlit/BrainLine/data/example/",
@@ -31,7 +31,7 @@
                 "somas_layer": "<unknown>",
                 "nonsomas_layer": "<unknown>"
             },
-            "somas_atlas_path": "/Users/thomasathey/Documents/mimlab/mouselight/ailey/detection_soma/wholebrain_results/atlas_somas_8557/",
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_8557/",
             "somas_atlas_url": "https://ara.viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=4M6ppFjZAUijkg",
             "subtype": "tph2 vglut3"
         },
@@ -42,7 +42,7 @@
                 "somas_layer": "<unknown>",
                 "nonsomas_layer": "<unknown>"
             },
-            "somas_atlas_path": "/Users/thomasathey/Documents/mimlab/mouselight/ailey/detection_soma/wholebrain_results/atlas_somas_8555/",
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_8555/",
             "somas_atlas_url": "https://ara.viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=qmoYCOl5qUBzkQ",
             "subtype": "tph2 vglut3"
         },
@@ -53,7 +53,7 @@
                 "somas_layer": "<unknown>",
                 "nonsomas_layer": "<unknown>"
             },
-            "somas_atlas_path": "/Users/thomasathey/Documents/mimlab/mouselight/ailey/detection_soma/wholebrain_results/atlas_somas_8607/",
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_8607/",
             "somas_atlas_url": "https://ara.viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=UtK0gLiq_8WlQA",
             "subtype": "tph2 gad2"
         },
@@ -72,7 +72,7 @@
                 "somas_layer": "<unknown>",
                 "nonsomas_layer": "<unknown>"
             },
-            "somas_atlas_path": "/Users/thomasathey/Documents/mimlab/mouselight/ailey/detection_soma/wholebrain_results/atlas_somas_8606/",
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_8606/",
             "somas_atlas_url": "https://ara.viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=guSqN8FCetYXGA",
             "subtype": "tph2 gad2"
         },
@@ -116,7 +116,7 @@
                 "somas_layer": "soma_val",
                 "nonsomas_layer": "nonsoma_val"
             },
-            "somas_atlas_path": "/Users/thomasathey/Documents/mimlab/mouselight/ailey/detection_soma/wholebrain_results/atlas_somas_8608/",
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_8608/",
             "somas_atlas_url": "https://ara.viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=mfHtdMvFZcYSiw",
             "subtype": "tph2 gad2"
         },
@@ -180,7 +180,7 @@
                 "nonsomas_layer": "nonsoma_train"
             },
             "subtype": "tph2 gad2",
-            "somas_atlas_path": "/Users/thomasathey/Documents/mimlab/mouselight/ailey/detection_soma/wholebrain_results/atlas_somas_8606/",
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_MPRRabies/",
             "somas_atlas_url": "https://ara.viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=6O1ufCnHBBeK8Q",
             "somas_atlas_url_partial": "https://ara.viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=iiX4cb9vLbHLXQ"
         },
@@ -192,7 +192,7 @@
                 "nonsomas_layer": "nonsoma_val"
             },
             "subtype": "tph2 gad2",
-            "somas_atlas_path": "/Users/thomasathey/Documents/mimlab/mouselight/ailey/detection_soma/wholebrain_results/atlas_somas_969/",
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_969/",
             "somas_atlas_url": "https://ara.viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=tYjwxkvRGgMd5g"
         },
         "910": {
@@ -217,7 +217,7 @@
                 "nonsomas_layer": "nonsoma_val"
             },
             "subtype": "tph2 vglut3",
-            "somas_atlas_path": "/Users/thomasathey/Documents/mimlab/mouselight/ailey/detection_soma/wholebrain_results/atlas_somas_892/",
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_892/",
             "somas_atlas_url": "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=A4qnN-6JzqWCcw"
         },
         "MS37": {
@@ -228,11 +228,11 @@
                 "nonsomas_layer": "nonsoma_val"
             },
             "subtype": "gad2 vgat",
-            "somas_atlas_path": "/Users/thomasathey/Documents/mimlab/mouselight/ailey/detection_soma/wholebrain_results/atlas_somas_MS37/",
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_MS37/",
             "somas_atlas_url": "https://ara.viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=0ODrFAwgltkRuQ"
         },
         "MS25": {
-            "base_s3": "precomputed://file:///mnt/data/Neuroglancer_Data/2023_04_14/MS25/",
+        
             "base_s3": "precomputed://s3://smartspim-precomputed-volumes/2023_04_14/MS25/",
             "val_info": {
                 "url": "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=s76nWlFZjjg-lQ",
@@ -240,7 +240,7 @@
                 "nonsomas_layer": "nonsoma_val"
             },
             "subtype": "tph2 gad2",
-            "somas_atlas_path": "/Users/thomasathey/Documents/mimlab/mouselight/ailey/detection_soma/wholebrain_results/atlas_somas_MS25/",
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_MS25/",
             "somas_atlas_url": "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=weCcwDSc3h1H2g"
         },
         "MS25_v2": {
@@ -252,7 +252,7 @@
                 "nonsomas_layer": "nonsoma_val"
             },
             "subtype": "tph2 gad2",
-            "somas_atlas_path": "/Users/thomasathey/Documents/mimlab/mouselight/ailey/detection_soma/wholebrain_results/atlas_somas_MS25_v2/"
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_MS25_v2/"
         },
         "MS36": {
             "base_s3": "precomputed://s3://smartspim-precomputed-volumes/2023_04_13/MS36/",
@@ -273,7 +273,7 @@
                 "bounds": [[2100,5500,1100], [3100, 6500, 2000]]
             },
             "subtype": "gad2 vgat",
-            "somas_atlas_path": "/Users/thomasathey/Documents/mimlab/mouselight/ailey/detection_soma/wholebrain_results/atlas_somas_MS36/",
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_MS36/",
             "somas_atlas_url": "https://ara.viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=LQlB_2tJGgxGHw"
         },
         "MS23": {
@@ -284,10 +284,11 @@
                 "nonsomas_layer": "nonsoma_val"
             },
             "subtype": "tph2 gad2",
-            "somas_atlas_path": "/Users/thomasathey/Documents/mimlab/mouselight/ailey/detection_soma/wholebrain_results/atlas_somas_MS23/",
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_MS23/",
             "somas_atlas_url": "https://ara.viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=haZlIiduEDJlOA"
         },
         "MS22": {
+            "base_local": "precomputed://file:///mnt/data/Neuroglancer_Data/2023_04_25/MS22/",
             "base_s3": "precomputed://s3://smartspim-precomputed-volumes/2023_04_25/MS22/",
             "val_info": {
                 "url": "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=uk9B5uXeUQfsdA",
@@ -295,7 +296,8 @@
                 "nonsomas_layer": "nonsoma_val"
             },
             "subtype": "tph2 gad2",
-            "somas_atlas_url": "https://ara.viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=GARK_nAwpm9gAA"
+            "somas_atlas_url": "https://ara.viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=GARK_nAwpm9gAA",
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_MS22/"
         },
         "MS50": {
             "base_s3": "precomputed://s3://smartspim-precomputed-volumes/2023_10_16/MS50/",
@@ -338,7 +340,7 @@
                 "nonsomas_layer": "nonsoma_val"
             },
             "subtype": "tph2 gad2",
-            "somas_atlas_path": "/Users/thomasathey/Documents/mimlab/mouselight/ailey/detection_soma/wholebrain_results/atlas_somas_MS21/"
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_MS21/"
         },
         "1252B": {
             "base_local": "precomputed://file:///mnt/data/Neuroglancer_Data/2023_12_20/1252B/",
@@ -348,7 +350,122 @@
                 "somas_layer": "soma_val",
                 "nonsomas_layer": "nonsoma_val"
             },
-            "subtype": "tph2 vglut3"
+            "subtype": "tph2 vglut3",
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_1252B/"
+        },
+        "8030R": {
+            "base_local": "precomputed://file:///mnt/data/Neuroglancer_Data/2024_01_02/8030R/",
+            "base_s3": "precomputed://s3://smartspim-precomputed-volumes/2024_01_02/8030R/",
+            "val_info": {
+                "url": "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=2IOg-6dGysMKyA",
+                "somas_layer": "soma_val",
+                "nonsomas_layer": "nonsoma_val"
+            },
+            "subtype": "tph2 vglut3",
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_8030R/"
+        },
+        "5573N": {
+            "base_local": "precomputed://file:///mnt/data/Neuroglancer_Data/2024_01_04/5573N/",
+            "base_s3": "precomputed://s3://smartspim-precomputed-volumes/2024_01_04/5573N/",
+            "val_info": {
+                "url": "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=a50P2mWVOLp82Q",
+                "somas_layer": "soma_val",
+                "nonsomas_layer": "nonsoma_val"
+            },
+            "subtype": "tph2 vglut3",
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_5573N/"
+        },
+        "21260L": {
+            "base_local": "precomputed://file:///mnt/data/Neuroglancer_Data/2024_01_17/21260L/",
+            "base_s3": "precomputed://s3://smartspim-precomputed-volumes/2024_01_17/21260L/",
+            "val_info": {
+                "url": "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=bsFHIF5NhkqjXg",
+                "somas_layer": "soma_val",
+                "nonsomas_layer": "nonsoma_val"
+            },
+            "subtype": "tph2 vglut3",
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_21260L/"
+        },
+        "21260B": {
+            "base_local": "precomputed://file:///mnt/data/Neuroglancer_Data/2024_01_18/21260B/",
+            "base_s3": "precomputed://s3://smartspim-precomputed-volumes/2024_01_18/21260B/",
+            "val_info": {
+                "url": "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=cCchh8Z-DIIYYA",
+                "somas_layer": "soma_val",
+                "nonsomas_layer": "nonsoma_val"
+            },
+            "subtype": "tph2 vglut3",
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_21260B/"
+        },
+        "21260R": {
+            "base_local": "precomputed://file:///mnt/data/Neuroglancer_Data/2024_01_19/21260R/",
+            "base_s3": "precomputed://s3://smartspim-precomputed-volumes/2024_01_19/21260R/",
+            "val_info": {
+                "url": "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=hr_TsS-pSArHyg",
+                "somas_layer": "soma_val",
+                "nonsomas_layer": "nonsoma_val"
+            },
+            "subtype": "tph2 vglut3",
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_21260R/"
+        },
+        "21268N": {
+            "base_local": "precomputed://file:///mnt/data/Neuroglancer_Data/2024_01_24/21268N/",
+            "base_s3": "precomputed://s3://smartspim-precomputed-volumes/2024_01_24/21268N/",
+            "val_info": {
+                "url": "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=YO6zmhQ08UP9bA",
+                "somas_layer": "soma_val",
+                "nonsomas_layer": "nonsoma_val"
+            },
+            "subtype": "gad2 vgat",
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_21268N/"
+        },
+        "38035L": {
+            "base_local": "precomputed://file:///mnt/data/Neuroglancer_Data/2024_01_26/38035L/",
+            "base_s3": "precomputed://s3://smartspim-precomputed-volumes/2024_01_26/38035L/",
+            "val_info": {
+                "url": "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=W_6GY-4v-i_4cg",
+                "somas_layer": "soma_val",
+                "nonsomas_layer": "nonsoma_val"
+            },
+            "subtype": "gad2 vgat",
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_38035L/"
+        },
+        "M40": {
+            "base_local": "precomputed://file:///mnt/data/Neuroglancer_Data/2024_05_10/M40/",
+            "val_info": {
+                "url": "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=rDBHVj_FI0EmlQ",
+                "somas_layer": "soma_val",
+                "nonsomas_layer": "nonsoma_val"
+            },
+            "subtype": "tph2 gad2",
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_MS23/",
+            "somas_atlas_url": "https://ara.viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=haZlIiduEDJlOA"
+        },
+        "257R": {
+            "base_local": "precomputed://file:///mnt/data/Neuroglancer_Data/2024_06_10/257R/",
+            "base_s3": "precomputed://s3://smartspim-precomputed-volumes/2024_06_10/257R/",
+            "val_info": {
+                "url": "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=a3g8rYzIczRXQw",
+                "somas_layer": "soma_val",
+                "nonsomas_layer": "nonsoma_val"
+            },
+            "subtype": "tph2 gad2",
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_257R/",
+            "somas_atlas_url": ""
+        },
+        "274L": {
+            "base_local": "precomputed://file:///mnt/data/Neuroglancer_Data/2024_06_13/274L/",
+            "base_s3": "precomputed://s3://smartspim-precomputed-volumes/2024_06_13/274L/",
+            "val_info": {
+                "url": "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=vW2cF0fO4NDlbg",
+                "somas_layer": "soma_val",
+                "nonsomas_layer": "nonsoma_val"
+            },
+            "subtype": "tph2 gad2",
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_274L/",
+            "somas_atlas_url": "",
+            "detection_viz_links": ["https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=1piV5x28Zs2_Ag", "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=ejR6GFGwpeye3g", " https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=XBsH4CV-swNkkg", "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=zD7OgoFRFuokjw", "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=pilLDKPkEjqVsA", "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=OGINsganTU2IeA"]
+             
         }
     },
     "brain2centers": {
