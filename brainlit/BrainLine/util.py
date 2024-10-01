@@ -298,6 +298,21 @@ def _find_atlas_level_label(label, atlas_level_nodes, atlas_level, G):
             raise ValueError(f"{counter} atlas level predecessors of {label}")
         return atlas_level_label
 
+def _find_custom_label(label, custom_regions, G):
+    if label == 0 or label not in G.nodes or G.nodes[label]["st_level"] in custom_regions:
+        return label
+    else:
+        counter = 0
+        # find which region of atlas_level is parent
+        for custom_node in custom_regions:
+            if nx.has_path(G, custom_node, label):
+                custom_label = custom_node
+                counter += 1
+        if counter > 1:
+            raise ValueError(f"{counter} custom label predecessors of {label}")
+        elif counter == 0:
+            custom_label = -1
+        return custom_label
 
 def _fold(image):
     """Take a 2D image and add the left half to a reflected version of the right half.

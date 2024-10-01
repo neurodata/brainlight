@@ -9,6 +9,7 @@ from brainlit.BrainLine.util import (
     _setup_atlas_graph,
     _get_atlas_level_nodes,
     _get_corners,
+    _find_custom_label
 )
 import napari
 import scipy.ndimage as ndi
@@ -30,6 +31,9 @@ import json
 from cloudvolume.exceptions import OutOfBoundsError
 from pathlib import Path
 import random
+
+import vedo
+vedo.settings.default_backend= 'vtk'
 
 
 class BrainDistribution:
@@ -63,23 +67,30 @@ class BrainDistribution:
                 data = json.load(f)
             self.ontology_fixes = data
 
-    def _slicetolabels(self, slice, fold_on: bool = False, atlas_level: int = 5):
+    def _slicetolabels(self, slice, fold_on: bool = False, atlas_level: int = 5, custom_regions: list = None):
+        replacements = self.ontology_fixes
         region_graph = _setup_atlas_graph(self.ontology_file)
         atlas_level_nodes = _get_atlas_level_nodes(atlas_level, region_graph)
         newslice = np.copy(slice)
         new_labels = {}
 
         for label in tqdm(np.unique(slice), desc=f"Relabeling slice"):
-            atlas_level_label = _find_atlas_level_label(
-                label, atlas_level_nodes, atlas_level, region_graph
-            )
-            newslice[slice == label] = atlas_level_label
-            if atlas_level_label not in new_labels.keys():
-                if atlas_level_label in region_graph.nodes:
-                    name = region_graph.nodes[atlas_level_label]["name"]
+            try:
+                fixed_label = replacements[str(label)]["replacement"]
+            except KeyError:
+                fixed_label = label
+            if custom_regions == None:
+                new_label = _find_atlas_level_label(fixed_label, atlas_level_nodes, atlas_level, region_graph)
+            else:
+                new_label = _find_custom_label(fixed_label, custom_regions, region_graph)
+
+            newslice[slice == label] = new_label
+            if new_label not in new_labels.keys():
+                if new_label in region_graph.nodes:
+                    name = region_graph.nodes[new_label]["name"]
                 else:
                     name = "??"
-                new_labels[atlas_level_label] = name
+                new_labels[new_label] = name
 
         labels = measure.label(newslice)
         borders = 0 * labels
@@ -1050,7 +1061,7 @@ class AxonDistribution(BrainDistribution):
         return region_graph, total_axon_vols
 
     def napari_coronal_section(
-        self, z: int, subtype_colors: dict, fold_on: bool = False
+        self, z: int, subtype_colors: dict, custom_regions: list = None, fold_on: bool = False
     ):
         """Generate napari viewer with allen parcellation and heat map of axon segmentations.
 
@@ -1068,7 +1079,7 @@ class AxonDistribution(BrainDistribution):
 
         slice = np.squeeze(np.array(vol_atlas[z, :, :]))
 
-        newslice, borders, half_width = self._slicetolabels(slice, fold_on=fold_on)
+        newslice, borders, half_width = self._slicetolabels(slice, fold_on=fold_on, custom_regions=custom_regions)
 
         if self.show_plots:
             v = napari.Viewer()
@@ -1125,7 +1136,7 @@ class AxonDistribution(BrainDistribution):
         brain2paths = self.brain2paths
 
         brainrender.settings.WHOLE_SCREEN = False
-        scene = Scene(atlas_name="allen_mouse_50um", title="Input Somas")
+        scene = Scene(atlas_name="allen_mouse_50um", title="Axon Projections", screenshots_folder="/home/user/misc_tommy/figures/")
         scene.add_brain_region(brain_region, alpha=0.15)
 
         for subtype in subtype_colors.keys():
@@ -1136,6 +1147,9 @@ class AxonDistribution(BrainDistribution):
                     vol = CloudVolume(
                         brain2paths[brain_id]["transformed_mask"], fill_missing=True
                     )
+                    if vol.resolution[0] / 1000 != 10:
+                        raise ValueError(f"Resolution at {brain2paths[brain_id]['transformed_mask']} is {vol.resolution}, not 10nm")
+                        
                     if im_total == None:
                         im_total = np.array(vol[:, :, :, :])
                     else:
@@ -1147,7 +1161,7 @@ class AxonDistribution(BrainDistribution):
             # make a volume actor and add
             actor = Volume(
                 im_total,
-                voxel_size=20,  # size of a voxel's edge in microns
+                voxel_size=10,  # size of a voxel's edge in microns
                 as_surface=False,  # if true a surface mesh is rendered instead of a volume
                 c=subtype_colors[
                     subtype
@@ -1161,6 +1175,7 @@ class AxonDistribution(BrainDistribution):
 
         if self.show_plots:
             scene.render()
+            scene.screenshot()
 
     def region_barchart(
         self, regions: list, composite_regions: dict = {}, normalize_region: int = -1

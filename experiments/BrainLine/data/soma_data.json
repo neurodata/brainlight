@@ -3,7 +3,7 @@
     "brain2paths": {
         "atlas": {
             "url": "precomputed://https://open-neurodata.s3.amazonaws.com/ara_2016/sagittal_10um/annotation_10um_2017",
-            "filepath": "/home/user/brainlit/experiments/BrainLine/data/ara_10um.tif"
+            "filepath": "/mnt/NAS/Neuroglancer Data/brainlit_archive/ara_10um.tif"
         },
         "test": {
             "base_local": "precomputed://file:///Users/thomasathey/Documents/mimlab/mouselight/brainlit_parent/brainlit/brainlit/BrainLine/data/example/",
@@ -465,6 +465,20 @@
             "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_274L/",
             "somas_atlas_url": "",
             "detection_viz_links": ["https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=1piV5x28Zs2_Ag", "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=ejR6GFGwpeye3g", " https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=XBsH4CV-swNkkg", "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=zD7OgoFRFuokjw", "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=pilLDKPkEjqVsA", "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=OGINsganTU2IeA"]
+             
+        },
+        "028L": {
+            "base_local": "precomputed://file:///mnt/data/Neuroglancer Data/2024_06_10/028L/",
+            "base_s3": "precomputed://s3://smartspim-precomputed-volumes/2024_06_10/028L/",
+            "val_info": {
+                "url": "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=JYinS3kWcRREEw",
+                "somas_layer": "soma_val",
+                "nonsomas_layer": "nonsoma_val"
+            },
+            "subtype": "tph2 gad2",
+            "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_028L/",
+            "somas_atlas_url": "",
+            "detection_viz_links": ["https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=MENqxx5mL5nhew", "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=xc7ugxmVgIFV6A"]
              
         }
     },
