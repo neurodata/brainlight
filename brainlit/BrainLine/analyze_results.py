@@ -273,6 +273,7 @@ class SomaDistribution(BrainDistribution):
         z: int,
         subtype_colors: dict,
         symbols: list = ["o", "+", "^", "vbar"],
+        custom_regions: list = None,
         fold_on: bool = False,
         plot_type: str = "napari",
     ):
@@ -299,7 +300,7 @@ class SomaDistribution(BrainDistribution):
             vol_atlas = CloudVolume(brain2paths["atlas"]["url"])
 
         slice = np.squeeze(vol_atlas[z, :, :])
-        newslice, borders, half_width = self._slicetolabels(slice, fold_on=fold_on)
+        newslice, borders, half_width = self._slicetolabels(slice, fold_on=fold_on, custom_regions=custom_regions)
         heatmap = np.zeros(
             [borders.shape[0], borders.shape[1], depth_radius * 2 + 1, 3]
         )
@@ -396,18 +397,18 @@ class SomaDistribution(BrainDistribution):
         brain2paths = self.brain2paths
 
         brainrender.settings.WHOLE_SCREEN = False
-        scene = Scene(atlas_name="allen_mouse_50um", title="Input Somas")
+        scene = Scene(atlas_name="allen_mouse_50um", title="Input Somas", screenshots_folder="/home/user/misc_tommy/figures/")
         scene.add_brain_region(brain_region, alpha=0.15)
 
         for brain_id in brain_ids:
             if "somas_atlas_path" in brain2paths[brain_id].keys():
-                continue
+                pass #continue
             viz_link = brain2paths[brain_id]["somas_atlas_url"]
             viz_link = NGLink(viz_link.split("json_url=")[-1])
             ngl_json = viz_link._json
+            points = []
             for layer in ngl_json["layers"]:
                 if layer["type"] == "annotation":
-                    points = []
                     for annot in tqdm(
                         layer["annotations"],
                         desc="Going through points...",
@@ -418,22 +419,26 @@ class SomaDistribution(BrainDistribution):
                             region = scene.atlas.structure_from_coords(struct_coord)
                             if region != 0 and np.any(struct_coord < 0) == False:
                                 points.append(annot["point"])
-                        except IndexError:
+                        except IndexError as e:
+                            print(f"Skipping IndexError exception while plotting points in brainrender: {e}")
                             continue
-                    points = np.array(points) * 10
+            
+            points = np.array(points) * 10
+            print(f"{brain_id} - {points.shape[0]} points")
 
-            scene.add(
-                Points(
-                    points,
-                    name="CELLS",
-                    colors=subtype_colors[brain2paths[brain_id]["subtype"]],
-                )
+            actor = Points(
+                points,
+                name=f"{brain_id} cells",
+                colors=subtype_colors[brain2paths[brain_id]["subtype"]],
             )
+            scene.add(actor)
 
-        scene.content
+        #scene.content
 
         if self.show_plots:
-            scene.render()
+            #scene.render()
+            scene.screenshot()
+            
 
     def region_barchart(
         self, regions: list, composite_regions: dict = {}, normalize_region: int = -1
@@ -1135,6 +1140,9 @@ class AxonDistribution(BrainDistribution):
         brain_ids = self.brain_ids
         brain2paths = self.brain2paths
 
+        atlas_bg_mask = io.imread(brain2paths["atlas"]["filepath"]) == 0
+        atlas_bg_mask = np.swapaxes(np.squeeze(atlas_bg_mask), 0, -1)
+
         brainrender.settings.WHOLE_SCREEN = False
         scene = Scene(atlas_name="allen_mouse_50um", title="Axon Projections", screenshots_folder="/home/user/misc_tommy/figures/")
         scene.add_brain_region(brain_region, alpha=0.15)
@@ -1158,6 +1166,10 @@ class AxonDistribution(BrainDistribution):
             im_total = np.squeeze(im_total)
             im_total = np.swapaxes(im_total, 0, 2)
 
+            print(atlas_bg_mask.shape)
+            print(im_total.shape)
+            im_total[atlas_bg_mask] = 0
+
             # make a volume actor and add
             actor = Volume(
                 im_total,
@@ -1170,11 +1182,11 @@ class AxonDistribution(BrainDistribution):
 
             scene.add(actor)
 
-        # render
-        scene.content
+        # # render
+        # scene.content
 
         if self.show_plots:
-            scene.render()
+            # scene.render()
             scene.screenshot()
 
     def region_barchart(

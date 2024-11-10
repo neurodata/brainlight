@@ -406,6 +406,7 @@
                 "nonsomas_layer": "nonsoma_val"
             },
             "subtype": "tph2 vglut3",
+            "somas_atlas_url": "https://ara.viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=r6dIWvfTyixB4w",
             "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_21260R/"
         },
         "21268N": {
@@ -417,6 +418,7 @@
                 "nonsomas_layer": "nonsoma_val"
             },
             "subtype": "gad2 vgat",
+            "somas_atlas_url": "https://ara.viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=9lJMYpcQxZrJcA",
             "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_21268N/"
         },
         "38035L": {
@@ -477,7 +479,7 @@
             },
             "subtype": "tph2 gad2",
             "somas_atlas_path": "/home/user/brainlit/experiments/BrainLine/data/wholebrain-results/soma/atlas_somas_028L/",
-            "somas_atlas_url": "",
+            "somas_atlas_url": "https://ara.viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=rC7Lb6FBUepp6A",
             "detection_viz_links": ["https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=MENqxx5mL5nhew", "https://viz.neurodata.io/?json_url=https://json.neurodata.io/v1?NGStateID=xc7ugxmVgIFV6A"]
              
         }
